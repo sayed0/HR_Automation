@@ -20,6 +20,7 @@ import time
 username = "sumergealerts@gmail.com"
 password = "P@ssw0rd@2020"
 
+
 #declaring the function which is used to login to the gmail and extract the needed parameters to be filled in the form
 def get_Mail():
 
@@ -30,7 +31,7 @@ def get_Mail():
     messages = int(messages[0])
     response, messagess = imap.search(None, 'UnSeen')
     messagess = messagess[0].split()
-    count_messeges =len(messagess)  
+    count_messeges =len(messagess)
     N = count_messeges 
     print (N)
     if N>0:
@@ -39,6 +40,7 @@ def get_Mail():
         driver.quit()
     for i in range(1, N+1):
     # fetch the email message by ID 
+        print ("fetch the email message by ID>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") 
         print(i)           
         res, msg = imap.fetch(str(i), "(RFC822)")
         for response in msg:
@@ -143,6 +145,13 @@ def get_Mail():
                             print(phone)
                         else:
                             phone = "00000000000"
+                        
+                        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+                        print(body.find('Contact Information'))
+                        if (body.find('Education') != -1):
+                            university = body[body.find('Education') + 9:body.find('University')]
+                            print(university)
+
                 if content_type == "text/html":
                     # if it's HTML, create a new HTML file and open it in browser
                     folder_name = clean(subject)
@@ -194,15 +203,10 @@ def login():
 
 #function used to fill in the application for each applicant
 def make_application(Applicant_name, mail, phone, Position, university):
-    #count = 0
-    #if count > 0:
-        #driver.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 't')
-    #using the driver to access the portal's new application page, then waiting for 4 seconds before
-    #executing the next block of code in order to give some time for the page to load properly
-    #count += 1
-    driver.get("https://ats.sumerge.com/web?#view_type=form&model=hr.applicant&action=128")
+    driver.get('https://ats.sumerge.com/web?#view_type=form&model=hr.applicant&action=128')
+    driver.get('https://ats.sumerge.com/web?#view_type=form&model=hr.applicant&action=128')
+    driver.get('https://ats.sumerge.com/web?#view_type=form&model=hr.applicant&action=128')
     time.sleep(4)
-
     #filling in the job title
     ####################################
     job_name = driver.find_element_by_xpath("//*[@id='o_field_input_41']")
@@ -256,9 +260,11 @@ def make_application(Applicant_name, mail, phone, Position, university):
     ########
     resp_name = driver.find_element_by_xpath("//*[@id='o_field_input_28']")
     resp_name.send_keys("elsayed")
-    resp_name.send_keys(Keys.RETURN)
-    #driver.find_element_by_xpath("//body").click()
-
+    list = driver.find_elements_by_tag_name("li")
+    for e in list:
+        if e.text == "elsayed":
+            e.click()
+            break
     #filling in the university's name
     ########
     time.sleep(1)
@@ -269,32 +275,31 @@ def make_application(Applicant_name, mail, phone, Position, university):
     ########
     GRAD_YEAR = driver.find_element_by_id("o_field_input_81")
     GRAD_YEAR.send_keys("0000")
-
-    #uploading the document by clicking on the document button after all the compulsory data has been filled
-    #then using the pyautogui to autofill the path and choosing the file saved earlier
-
-    #click_document = driver.find_element_by_xpath("/html/body/div[1]/div[2]/div[2]/div/div/div[1]/div/div[1]/button[4]")
-    #click_document.click()
-    #time.sleep(3)
+    ###########
+    #Submit the application
     submit = driver.find_element_by_xpath("/html/body/div[1]/div[2]/div[1]/div[2]/div[1]/div/div[2]/button[1]")
     submit.click()
-    time.sleep(1)
-
-    upload_cv = driver.find_element_by_css_selector("body > div.o_main > div.o_main_content > div.o_control_panel > div.o_cp_left > div.o_cp_sidebar > div > div:nth-child(2) > button")
-    upload_cv.click()
-    time.sleep(1)
-    #s = driver.find_element_by_xpath("//input[@type='file']")
-    #s.send_keys("C:/Users/dwahid/Desktop/HR CVs/" + Applicant_name + ".pdf")
-    add_cv = driver.find_element_by_xpath("/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div/div[2]/ul/li/div/form/input[3]")
+    time.sleep(3)
+    ##########
+    #uploading the document by clicking on the document button after all the compulsory data has been filled
+    #then using the pyautogui to autofill the path and choosing the file saved earlier
+    add_cv = driver.find_element_by_xpath("/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div/div[2]/button")
     add_cv.click()
-    time.sleep(2)
-
-    cv_path = " C:\\Users\\dwahid\\Desktop\\HR CVs\\"
-    pyautogui.write(cv_path + Applicant_name + ".pdf", interval=0.20)
+    time.sleep(1)
+    
+    list = driver.find_elements_by_tag_name("li")
+    for e in list:
+        if e.text == "Add...":
+            e.click()
+            break
+    time.sleep(1)
+    cv_path = "C:\\Users\\selsayed\\Documents\\HR_Application\\"
+    Applicant_name = "ahmed"
+    pyautogui.write(cv_path + Applicant_name + ".pdf", interval=0.02)
     pyautogui.press('return')
     #since the page takes quite some time for the file to be saved, halt the for loop for 40 seconds to avoid
     #the termination of the loop
-    time.sleep(40)
+    time.sleep(2)
 
 
 
